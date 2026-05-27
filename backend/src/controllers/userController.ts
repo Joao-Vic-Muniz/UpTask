@@ -31,7 +31,11 @@ export class UserController {
                 },
             });
 
-            return res.status(201).json(user);
+            return res.status(201).json({
+                id: user.id,
+                name: user.name,
+                email: user.email,  
+            });
         } catch (error) {
             return res.status(500).json({
                 error: "Erro interno do servidor",
@@ -43,7 +47,7 @@ export class UserController {
         const { email, password } = req.body;
 
         try {
-            const user = prisma.user.findUnique({
+            const user = await prisma.user.findUnique({
                 where: {
                     email,
                 },

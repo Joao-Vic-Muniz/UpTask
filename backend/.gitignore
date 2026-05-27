@@ -1,3 +1,16 @@
-node_modules
-dist
+# Node
+node_modules/
+dist/
+
+# Ambientes e Segredos
 .env
+
+# Prisma e Banco de Dados Local
+prisma/dev.db
+prisma/dev.db-journal
+dev.db
+dev.db-journal
+
+# Caches
+.ts-node-dev/
+.eslintcache

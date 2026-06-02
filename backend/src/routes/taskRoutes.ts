@@ -9,7 +9,7 @@ const taskController = new TaskController();
 
 router.post("/", authMiddleware, taskController.create);
 router.get("/", authMiddleware, taskController.list);
-router.delete("/:id", authMiddleware, taskController.delete);
 router.put("/:id", authMiddleware, taskController.update);
+router.delete("/:id", authMiddleware, taskController.delete);
 
 export default router;

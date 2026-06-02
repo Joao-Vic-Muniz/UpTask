@@ -13,6 +13,9 @@ router.post("/register", userController.register);
 // login
 router.post("/login", userController.login);
 
+//me
+router.get("/me", authMiddleware, userController.me);
+
 // rota protegida
 router.get("/profile", authMiddleware, (req, res) => {
   return res.json({

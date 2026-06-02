@@ -1,14 +1,22 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
 
 import { prisma } from "../database/prisma";
 
+import {
+  registerSchema,
+  loginSchema,
+} from "../schemas/userSchema";
+
 export class UserController {
   async register(req: Request, res: Response) {
-    const { name, email, password } = req.body;
-
     try {
+      const validatedData = registerSchema.parse(req.body);
+
+      const { name, email, password } = validatedData;
+
       const userExists = await prisma.user.findUnique({
         where: {
           email,
@@ -36,7 +44,14 @@ export class UserController {
         name: user.name,
         email: user.email,
       });
+
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          errors: error.issues,
+        });
+      }
+
       return res.status(500).json({
         error: "Erro interno do servidor",
       });
@@ -44,9 +59,11 @@ export class UserController {
   }
 
   async login(req: Request, res: Response) {
-    const { email, password } = req.body;
-
     try {
+      const validatedData = loginSchema.parse(req.body);
+
+      const { email, password } = validatedData;
+
       const user = await prisma.user.findUnique({
         where: {
           email,
@@ -59,7 +76,10 @@ export class UserController {
         });
       }
 
-      const passwordMatch = await bcrypt.compare(password, user.password);
+      const passwordMatch = await bcrypt.compare(
+        password,
+        user.password
+      );
 
       if (!passwordMatch) {
         return res.status(400).json({
@@ -74,7 +94,7 @@ export class UserController {
         process.env.JWT_SECRET as string,
         {
           expiresIn: "7d",
-        },
+        }
       );
 
       return res.json({
@@ -85,7 +105,14 @@ export class UserController {
         },
         token,
       });
+
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          errors: error.issues,
+        });
+      }
+
       return res.status(500).json({
         error: "Erro interno do servidor",
       });
@@ -106,7 +133,14 @@ export class UserController {
         },
       });
 
+      if (!user) {
+        return res.status(404).json({
+          error: "Usuário não encontrado",
+        });
+      }
+
       return res.json(user);
+
     } catch (error) {
       return res.status(500).json({
         message: "Erro ao buscar usuário",

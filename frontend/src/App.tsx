@@ -1,9 +1,7 @@
-export default function App() {
-  return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-    </div>
-  );
+import { AppRoutes } from "./routes/App.Routes";
+
+function App() {
+  return <AppRoutes />;
 }
+
+export default App;
